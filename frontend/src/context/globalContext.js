@@ -4,7 +4,7 @@ import axios from "axios";
 // ===============================
 // 🌐 Base API URL
 // ===============================
-const BASE_URL = "http://localhost:5000/api/v1/";
+const BASE_URL = "https://personal-expense-tracker-backend-xp5p.onrender.com";
 
 // Create Context
 const GlobalContext = createContext();
