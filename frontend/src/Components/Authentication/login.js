@@ -20,8 +20,10 @@ function Login() {
   };
 
   return (
-    <Wrapper>
-      <Card>
+    <LoginContainer>
+
+      <LoginCard>
+
         <h1>Sign In</h1>
         {error && <div className="error">{error}</div>}
         <form onSubmit={submit}>
@@ -30,8 +32,11 @@ function Login() {
           <button>Login</button>
         </form>
         <Link to="/signup">Create account</Link>
-      </Card>
-    </Wrapper>
+      </LoginCard>
+
+      </LoginContainer>
+
+    
   );
 }
 
