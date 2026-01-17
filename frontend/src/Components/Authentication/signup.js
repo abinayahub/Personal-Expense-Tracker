@@ -20,7 +20,12 @@ function Signup() {
     setError("");
 
     try {
-      await axios.post("http://localhost:5000/api/auth/signup", form);
+      await axios.post(
+  "https://personal-expense-tracker-backend-xp5p.onrender.com/api/auth/signup",
+  form
+);
+
+      //await axios.post("http://localhost:5000/api/auth/signup", form);
       navigate("/login");
     } catch (err) {
       setError(err.response?.data?.message || "An error occurred. Please try again.");
