@@ -1,12 +1,12 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import styled from "styled-components";
-import API from "../../api";   // ✅ IMPORTANT
+import API from "../../api";
 
 function Signup() {
   const [form, setForm] = useState({ name: "", email: "", password: "" });
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -20,137 +20,53 @@ function Signup() {
     setError("");
 
     try {
-      // ✅ CORRECT API CALL (NO localhost)
       await API.post("/api/auth/signup", form);
-
       navigate("/login");
     } catch (err) {
-      setError(
-        err.response?.data?.message ||
-          "Signup failed. Please try again."
-      );
+      setError(err.response?.data?.message || "Signup failed");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <SignupContainer>
-      <SignupCard>
-        <div className="card-header">
-          <h1>Create Account</h1>
-          <p>Join our community</p>
-        </div>
+    <Wrapper>
+      <Card>
+        <h1>Create Account</h1>
+        <p>Start managing your finances</p>
 
-        <div className="card-body">
-          <h2>Create Account</h2>
-          <p className="subtitle">Start managing your finances today</p>
+        {error && <div className="error">{error}</div>}
 
-          {error && <div className="error-message">{error}</div>}
+        <form onSubmit={handleSubmit}>
+          <input name="name" placeholder="Full Name" onChange={handleChange} required />
+          <input name="email" type="email" placeholder="Email" onChange={handleChange} required />
+          <input name="password" type="password" placeholder="Password" onChange={handleChange} required />
+          <button disabled={loading}>{loading ? "Creating..." : "Create Account"}</button>
+        </form>
 
-          <form onSubmit={handleSubmit}>
-            <div className="form-group">
-              <label>Full Name</label>
-              <input
-                name="name"
-                type="text"
-                value={form.name}
-                onChange={handleChange}
-                required
-                disabled={loading}
-              />
-            </div>
-
-            <div className="form-group">
-              <label>Email</label>
-              <input
-                name="email"
-                type="email"
-                value={form.email}
-                onChange={handleChange}
-                required
-                disabled={loading}
-              />
-            </div>
-
-            <div className="form-group">
-              <label>Password</label>
-              <input
-                name="password"
-                type="password"
-                value={form.password}
-                onChange={handleChange}
-                required
-                disabled={loading}
-              />
-            </div>
-
-            <button type="submit" disabled={loading} className="submit-btn">
-              {loading ? "Creating..." : "Create Account"}
-            </button>
-          </form>
-
-          <div className="login-link">
-            Already have an account? <Link to="/login">Sign in</Link>
-          </div>
-        </div>
-      </SignupCard>
-    </SignupContainer>
+        <Link to="/login">Already have an account? Sign in</Link>
+      </Card>
+    </Wrapper>
   );
 }
 
 export default Signup;
 
-/* ===================== STYLES ===================== */
-
-const SignupContainer = styled.div`
-  min-height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background: linear-gradient(135deg, #667eea, #764ba2);
+/* styles */
+const Wrapper = styled.div`
+  min-height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  background:#6b6fd6;
 `;
-
-const SignupCard = styled.div`
-  background: #fff;
-  border-radius: 16px;
-  width: 100%;
-  max-width: 420px;
-  padding: 2rem;
-
-  .card-header {
-    text-align: center;
-    margin-bottom: 1rem;
-  }
-
-  .card-body {
-    display: flex;
-    flex-direction: column;
-  }
-
-  .error-message {
-    color: red;
-    margin-bottom: 1rem;
-    text-align: center;
-  }
-
-  .form-group {
-    display: flex;
-    flex-direction: column;
-    margin-bottom: 1rem;
-  }
-
-  .submit-btn {
-    padding: 0.8rem;
-    background: #667eea;
-    color: white;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-  }
-
-  .login-link {
-    margin-top: 1rem;
-    text-align: center;
-  }
+const Card = styled.div`
+  background:#fff;
+  padding:2rem;
+  width:350px;
+  border-radius:12px;
+  text-align:center;
+  input{width:100%;padding:10px;margin:8px 0;}
+  button{width:100%;padding:10px;margin-top:10px;}
+  .error{color:red;margin-bottom:10px;}
 `;
