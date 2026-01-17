@@ -6,7 +6,7 @@ const app = express()
 const authRoutes = require('./routes/auth.js');
 require('dotenv').config()
 
-const PORT = process.env.PORT
+const PORT = process.env.PORT||5000;
 
 //middlewares
 app.use(express.json())
