@@ -4,7 +4,8 @@ import axios from "axios";
 // ===============================
 // 🌐 Base API URL
 // ===============================
-const BASE_URL = "https://personal-expense-tracker-backend-xp5p.onrender.com";
+//const BASE_URL = "https://personal-expense-tracker-backend-xp5p.onrender.com";
+const BASE_URL = "https://personal-expense-tracker-backend-xp5p.onrender.com/api";
 
 // Create Context
 const GlobalContext = createContext();
@@ -52,7 +53,9 @@ export const GlobalProvider = ({ children }) => {
   const addIncome = async (income) => {
     await handleApiCall(
       async () => {
-        await axios.post(`${BASE_URL}add-income`, income, getAuthConfig());
+        await axios.post(`${BASE_URL}/income/add-income`, income, getAuthConfig());
+
+       // await axios.post(`${BASE_URL}add-income`, income, getAuthConfig());
         await getIncomes();
       },
       "Income added successfully ✅"
@@ -61,7 +64,9 @@ export const GlobalProvider = ({ children }) => {
 
   const getIncomes = async () => {
     await handleApiCall(async () => {
-      const { data } = await axios.get(`${BASE_URL}get-incomes`, getAuthConfig());
+      const { data } = await axios.get(`${BASE_URL}/income/get-incomes`, getAuthConfig());
+
+      //const { data } = await axios.get(`${BASE_URL}/income/get-incomes`, getAuthConfig());
       setIncomes(data);
     });
   };
@@ -69,7 +74,9 @@ export const GlobalProvider = ({ children }) => {
   const deleteIncome = async (id) => {
     await handleApiCall(
       async () => {
-        await axios.delete(`${BASE_URL}delete-income/${id}`, getAuthConfig());
+        await axios.delete(`${BASE_URL}/income/delete-income/${id}`, getAuthConfig());
+
+        //await axios.delete(`${BASE_URL}delete-income/${id}`, getAuthConfig());
         await getIncomes();
       },
       "Income deleted 🗑️"
@@ -84,7 +91,9 @@ export const GlobalProvider = ({ children }) => {
   const addExpense = async (expense) => {
     await handleApiCall(
       async () => {
-        await axios.post(`${BASE_URL}add-expense`, expense, getAuthConfig());
+        await axios.post(`${BASE_URL}/expense/add-expense`, expense, getAuthConfig());
+
+        //await axios.post(`${BASE_URL}add-expense`, expense, getAuthConfig());
         await getExpenses();
       },
       "Expense added successfully ✅"
@@ -93,7 +102,9 @@ export const GlobalProvider = ({ children }) => {
 
   const getExpenses = async () => {
     await handleApiCall(async () => {
-      const { data } = await axios.get(`${BASE_URL}get-expenses`, getAuthConfig());
+      const { data } = await axios.get(`${BASE_URL}/expense/get-expenses`, getAuthConfig());
+
+      //const { data } = await axios.get(`${BASE_URL}get-expenses`, getAuthConfig());
       setExpenses(data);
     });
   };
@@ -101,7 +112,9 @@ export const GlobalProvider = ({ children }) => {
   const deleteExpense = async (id) => {
     await handleApiCall(
       async () => {
-        await axios.delete(`${BASE_URL}delete-expense/${id}`, getAuthConfig());
+        await axios.delete(`${BASE_URL}/expense/delete-expense/${id}`, getAuthConfig());
+
+        //await axios.delete(`${BASE_URL}delete-expense/${id}`, getAuthConfig());
         await getExpenses();
       },
       "Expense deleted 🗑️"
