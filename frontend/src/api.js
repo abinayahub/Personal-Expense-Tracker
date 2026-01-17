@@ -1,10 +1,9 @@
 import axios from "axios";
 
 const API = axios.create({
-  baseURL: "https://personal-expense-tracker-backend-xp5p.onrender.com",
+  baseURL: "https://personal-expense-tracker-backend-xp5p.onrender.com/api",
 });
 
-// token auto attach
 API.interceptors.request.use((req) => {
   const token = localStorage.getItem("token");
   if (token) {
