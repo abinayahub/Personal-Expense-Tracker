@@ -1,12 +1,12 @@
 import React, { useState } from "react";
+import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
 import styled from "styled-components";
-import API from "../../api";
 
 function Signup() {
   const [form, setForm] = useState({ name: "", email: "", password: "" });
-  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -20,22 +20,24 @@ function Signup() {
     setError("");
 
     try {
-      await API.post("/api/auth/signup", form);
+      await axios.post(
+        "https://personal-expense-tracker-backend-xp5p.onrender.com/api/auth/signup",
+        form
+      );
       navigate("/login");
     } catch (err) {
-      setError(err.response?.data?.message || "Signup failed. Try again.");
+      setError(err.response?.data?.message || "Signup failed");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <SignupContainer>
-      <SignupCard>
+    <Container>
+      <Card>
         <h1>Create Account</h1>
-        <p className="subtitle">Start managing your finances</p>
 
-        {error && <div className="error">{error}</div>}
+        {error && <p className="error">{error}</p>}
 
         <form onSubmit={handleSubmit}>
           <input
@@ -69,84 +71,44 @@ function Signup() {
           </button>
         </form>
 
-        <Link className="login-link" to="/login">
-          Already have an account? Sign in
-        </Link>
-      </SignupCard>
-    </SignupContainer>
+        <Link to="/login">Already have an account? Sign in</Link>
+      </Card>
+    </Container>
   );
 }
 
 export default Signup;
 
-/* ================= STYLES ================= */
-
-const SignupContainer = styled.div`
+/* styles */
+const Container = styled.div`
   min-height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
-  background: linear-gradient(135deg, #667eea, #764ba2);
+  background: #6b6fd6;
 `;
 
-const SignupCard = styled.div`
-  background: #ffffff;
+const Card = styled.div`
+  background: #fff;
   padding: 2rem;
   width: 350px;
-  border-radius: 14px;
+  border-radius: 12px;
   text-align: center;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
-
-  h1 {
-    margin-bottom: 0.3rem;
-  }
-
-  .subtitle {
-    font-size: 0.9rem;
-    color: #666;
-    margin-bottom: 1rem;
-  }
-
-  .error {
-    color: #dc2626;
-    margin-bottom: 1rem;
-    font-size: 0.9rem;
-  }
-
-  form {
-    display: flex;
-    flex-direction: column;
-  }
 
   input {
+    width: 100%;
     padding: 10px;
     margin: 8px 0;
-    border-radius: 8px;
-    border: 1px solid #ccc;
-    font-size: 0.95rem;
   }
 
   button {
-    margin-top: 12px;
+    width: 100%;
     padding: 10px;
-    border: none;
-    border-radius: 8px;
-    background: #667eea;
-    color: #fff;
-    font-weight: 600;
-    cursor: pointer;
+    margin-top: 10px;
   }
 
-  button:disabled {
-    opacity: 0.7;
-    cursor: not-allowed;
-  }
-
-  .login-link {
-    display: block;
-    margin-top: 1rem;
-    font-size: 0.9rem;
-    color: #667eea;
-    text-decoration: none;
+  .error {
+    color: red;
+    margin-bottom: 10px;
   }
 `;
