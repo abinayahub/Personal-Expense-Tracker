@@ -1,11 +1,8 @@
 import React, { createContext, useContext, useState } from "react";
 import axios from "axios";
 
-// ===============================
-// 🌐 Base API URL
-// ===============================
-//const BASE_URL = "https://personal-expense-tracker-backend-xp5p.onrender.com";
-const BASE_URL = "https://personal-expense-tracker-backend-xp5p.onrender.com/api";
+// 🌐 Backend base URL (NO /api here)
+const BASE_URL = "https://personal-expense-tracker-backend-xp5p.onrender.com";
 
 // Create Context
 const GlobalContext = createContext();
@@ -14,128 +11,145 @@ const GlobalContext = createContext();
 // 🌍 Global Provider
 // ===============================
 export const GlobalProvider = ({ children }) => {
-  // States
   const [incomes, setIncomes] = useState([]);
   const [expenses, setExpenses] = useState([]);
   const [error, setError] = useState(null);
-  const [message, setMessage] = useState(null);
   const [loading, setLoading] = useState(false);
 
   // ===============================
-  // 🔑 Get Authorization Header
+  // 🔑 Auth Header
   // ===============================
   const getAuthConfig = () => {
     const token = localStorage.getItem("token");
     return {
-      headers: { Authorization: `Bearer ${token}` },
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
     };
   };
 
   // ===============================
-  // 📌 Helper: API Call Handler
+  // 💰 INCOME
   // ===============================
-  const handleApiCall = async (callback, successMsg) => {
+  const addIncome = async (income) => {
     try {
       setLoading(true);
       setError(null);
-      await callback();
-      if (successMsg) setMessage(successMsg);
+
+      await axios.post(
+        `${BASE_URL}/api/income/add-income`,
+        income,
+        getAuthConfig()
+      );
+
+      await getIncomes();
     } catch (err) {
-      setError(err.response?.data?.message || "Something went wrong");
+      setError(err.response?.data?.message || "Income add failed");
     } finally {
       setLoading(false);
     }
   };
 
-  // ===============================
-  // 💰 Income Functions
-  // ===============================
-  const addIncome = async (income) => {
-    await handleApiCall(
-      async () => {
-        await axios.post(`${BASE_URL}/income/add-income`, income, getAuthConfig());
-
-       // await axios.post(`${BASE_URL}add-income`, income, getAuthConfig());
-        await getIncomes();
-      },
-      "Income added successfully ✅"
-    );
-  };
-
   const getIncomes = async () => {
-    await handleApiCall(async () => {
-      const { data } = await axios.get(`${BASE_URL}/income/get-incomes`, getAuthConfig());
+    try {
+      setLoading(true);
+      setError(null);
 
-      //const { data } = await axios.get(`${BASE_URL}/income/get-incomes`, getAuthConfig());
+      const { data } = await axios.get(
+        `${BASE_URL}/api/income/get-incomes`,
+        getAuthConfig()
+      );
+
       setIncomes(data);
-    });
+    } catch (err) {
+      setError(err.response?.data?.message || "Fetch income failed");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const deleteIncome = async (id) => {
-    await handleApiCall(
-      async () => {
-        await axios.delete(`${BASE_URL}/income/delete-income/${id}`, getAuthConfig());
-
-        //await axios.delete(`${BASE_URL}delete-income/${id}`, getAuthConfig());
-        await getIncomes();
-      },
-      "Income deleted 🗑️"
-    );
+    try {
+      await axios.delete(
+        `${BASE_URL}/api/income/delete-income/${id}`,
+        getAuthConfig()
+      );
+      await getIncomes();
+    } catch (err) {
+      setError(err.response?.data?.message || "Delete income failed");
+    }
   };
 
-  const totalIncome = () => incomes.reduce((sum, inc) => sum + inc.amount, 0);
+  const totalIncome = () =>
+    incomes.reduce((sum, item) => sum + Number(item.amount), 0);
 
   // ===============================
-  // 💸 Expense Functions
+  // 💸 EXPENSE
   // ===============================
   const addExpense = async (expense) => {
-    await handleApiCall(
-      async () => {
-        await axios.post(`${BASE_URL}/expense/add-expense`, expense, getAuthConfig());
+    try {
+      setLoading(true);
+      setError(null);
 
-        //await axios.post(`${BASE_URL}add-expense`, expense, getAuthConfig());
-        await getExpenses();
-      },
-      "Expense added successfully ✅"
-    );
+      await axios.post(
+        `${BASE_URL}/api/expense/add-expense`,
+        expense,
+        getAuthConfig()
+      );
+
+      await getExpenses();
+    } catch (err) {
+      setError(err.response?.data?.message || "Expense add failed");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const getExpenses = async () => {
-    await handleApiCall(async () => {
-      const { data } = await axios.get(`${BASE_URL}/expense/get-expenses`, getAuthConfig());
+    try {
+      setLoading(true);
+      setError(null);
 
-      //const { data } = await axios.get(`${BASE_URL}get-expenses`, getAuthConfig());
+      const { data } = await axios.get(
+        `${BASE_URL}/api/expense/get-expenses`,
+        getAuthConfig()
+      );
+
       setExpenses(data);
-    });
+    } catch (err) {
+      setError(err.response?.data?.message || "Fetch expense failed");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const deleteExpense = async (id) => {
-    await handleApiCall(
-      async () => {
-        await axios.delete(`${BASE_URL}/expense/delete-expense/${id}`, getAuthConfig());
-
-        //await axios.delete(`${BASE_URL}delete-expense/${id}`, getAuthConfig());
-        await getExpenses();
-      },
-      "Expense deleted 🗑️"
-    );
+    try {
+      await axios.delete(
+        `${BASE_URL}/api/expense/delete-expense/${id}`,
+        getAuthConfig()
+      );
+      await getExpenses();
+    } catch (err) {
+      setError(err.response?.data?.message || "Delete expense failed");
+    }
   };
 
-  const totalExpenses = () => expenses.reduce((sum, exp) => sum + exp.amount, 0);
+  const totalExpenses = () =>
+    expenses.reduce((sum, item) => sum + Number(item.amount), 0);
 
   // ===============================
   // 📊 Balance & History
   // ===============================
   const totalBalance = () => totalIncome() - totalExpenses();
 
-  const transactionHistory = () => {
-    return [...incomes, ...expenses]
+  const transactionHistory = () =>
+    [...incomes, ...expenses]
       .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
       .slice(0, 3);
-  };
 
   // ===============================
-  // 🏦 Context Value
+  // 🏦 Provider
   // ===============================
   return (
     <GlobalContext.Provider
@@ -143,10 +157,7 @@ export const GlobalProvider = ({ children }) => {
         incomes,
         expenses,
         error,
-        message,
         loading,
-        setError,
-        setMessage,
 
         addIncome,
         getIncomes,
@@ -168,6 +179,6 @@ export const GlobalProvider = ({ children }) => {
 };
 
 // ===============================
-// 📌 Hook for easy use
+// 📌 Hook
 // ===============================
 export const useGlobalContext = () => useContext(GlobalContext);
