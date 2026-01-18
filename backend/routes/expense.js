@@ -12,16 +12,15 @@ router.post("/add-expense", auth, async (req, res) => {
     });
     await expense.save();
     res.json(expense);
-    console.log(expense);
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
 });
 
-// Get Expenses for logged-in user
+// Get Expenses
 router.get("/get-expenses", auth, async (req, res) => {
   try {
-    const expenses = await Expense.find({ userId: req.user.id }).sort({ createdAt: -1 });
+    const expenses = await Expense.find({ userId: req.user.id });
     res.json(expenses);
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -31,7 +30,10 @@ router.get("/get-expenses", auth, async (req, res) => {
 // Delete Expense
 router.delete("/delete-expense/:id", auth, async (req, res) => {
   try {
-    await Expense.findOneAndDelete({ _id: req.params.id, userId: req.user.id });
+    await Expense.findOneAndDelete({
+      _id: req.params.id,
+      userId: req.user.id,
+    });
     res.json({ message: "Expense deleted" });
   } catch (err) {
     res.status(500).json({ message: err.message });

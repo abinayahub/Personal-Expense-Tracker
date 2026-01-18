@@ -9,14 +9,14 @@ module.exports = (req, res, next) => {
     }
 
     const token = authHeader.split(" ")[1];
+
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-S
-    // ✅ THIS IS PERFECT
+
+    // attach user id to request
     req.user = { id: decoded.id };
 
     next();
   } catch (error) {
-    console.error("Auth middleware error:", error.message);
     return res.status(401).json({ message: "Invalid token" });
   }
 };

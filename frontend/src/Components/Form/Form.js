@@ -11,7 +11,7 @@ function Form() {
   const [inputState, setInputState] = useState({
     title: '',
     amount: '',
-    date: '',
+    date: null,
     category: '',
     description: '',
   });
@@ -25,11 +25,21 @@ function Form() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    addIncome(inputState);
+    if (!title || !amount || !date || !category) {
+    setError("Please fill all fields");
+    return;
+  }
+    addIncome({
+    title,
+    amount: Number(amount),   // ✅ number
+    date: date,               // ✅ Date object
+    category,
+    description,
+  });
     setInputState({
       title: '',
       amount: '',
-      date: '',
+      date: null,
       category: '',
       description: '',
     });
@@ -75,7 +85,7 @@ function Form() {
         <div className="form-group">
           <label htmlFor="date" className="label">Date</label>
           <DatePicker
-            selected={date}
+            selected={date||null}
             dateFormat="dd/MM/yyyy"
             onChange={(selectedDate) => {
               setInputState({ ...inputState, date: selectedDate });
