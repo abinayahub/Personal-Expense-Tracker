@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState } from "react";
+/*import React, { createContext, useContext, useState } from "react";
 import axios from "axios";
 
 // 🌐 Backend base URL (NO /api here)
@@ -181,4 +181,92 @@ export const GlobalProvider = ({ children }) => {
 // ===============================
 // 📌 Hook
 // ===============================
+export const useGlobalContext = () => useContext(GlobalContext);
+*/
+import React, { createContext, useContext, useState } from "react";
+import axios from "axios";
+
+// 🌐 BACKEND BASE URL (NO /api here)
+const BASE_URL = "https://personal-expense-tracker-backend-xp5p.onrender.com";
+
+const GlobalContext = createContext();
+
+export const GlobalProvider = ({ children }) => {
+  const [incomes, setIncomes] = useState([]);
+  const [expenses, setExpenses] = useState([]);
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
+
+  // 🔑 Auth header
+  const getAuthConfig = () => {
+    const token = localStorage.getItem("token");
+    return {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    };
+  };
+
+  // =====================
+  // 💰 INCOME
+  // =====================
+  const addIncome = async (income) => {
+    try {
+      setError(null);
+      await axios.post(
+        `${BASE_URL}/api/income/add-income`,
+        income,
+        getAuthConfig()
+      );
+      getIncomes();
+    } catch (err) {
+      setError(err.response?.data?.message || "Fetch income failed");
+    }
+  };
+
+  const getIncomes = async () => {
+    try {
+      const res = await axios.get(
+        `${BASE_URL}/api/income/get-incomes`,
+        getAuthConfig()
+      );
+      setIncomes(res.data);
+    } catch (err) {
+      setError(err.response?.data?.message || "Fetch income failed");
+    }
+  };
+
+  const deleteIncome = async (id) => {
+    try {
+      await axios.delete(
+        `${BASE_URL}/api/income/delete-income/${id}`,
+        getAuthConfig()
+      );
+      getIncomes();
+    } catch (err) {
+      setError(err.response?.data?.message || "Delete income failed");
+    }
+  };
+
+  const totalIncome = () =>
+    incomes.reduce((sum, item) => sum + Number(item.amount), 0);
+
+  return (
+    <GlobalContext.Provider
+      value={{
+        incomes,
+        error,
+        loading,
+        addIncome,
+        getIncomes,
+        deleteIncome,
+        totalIncome,
+        setError,
+      }}
+    >
+      {children}
+    </GlobalContext.Provider>
+  );
+};
+
 export const useGlobalContext = () => useContext(GlobalContext);
